@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Light It Up</title>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Tenor+Sans&family=Marck+Script&display=swap" rel="stylesheet"/>
+
+  <!-- Favicon: SVG cat icon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23f7c5c5'/%3E%3C!-- body --%3E%3Ccircle cx='50' cy='60' r='28' fill='%23fff0f0'/%3E%3C!-- head --%3E%3Ccircle cx='50' cy='38' r='20' fill='%23fff0f0'/%3E%3C!-- left ear --%3E%3Cpolygon points='32,24 28,10 40,20' fill='%23fff0f0'/%3E%3C!-- right ear --%3E%3Cpolygon points='68,24 72,10 60,20' fill='%23fff0f0'/%3E%3C!-- eyes --%3E%3Ccircle cx='43' cy='37' r='3' fill='%23c97c7c'/%3E%3Ccircle cx='57' cy='37' r='3' fill='%23c97c7c'/%3E%3C!-- nose --%3E%3Ccircle cx='50' cy='43' r='2' fill='%23c97c7c'/%3E%3C!-- whiskers --%3E%3Cline x1='30' y1='43' x2='46' y2='44' stroke='%23c97c7c' stroke-width='1'/%3E%3Cline x1='54' y1='44' x2='70' y2='43' stroke='%23c97c7c' stroke-width='1'/%3E%3C!-- paw --%3E%3Ccircle cx='28' cy='65' r='8' fill='%23fff0f0'/%3E%3C!-- candle flame --%3E%3Cellipse cx='50' cy='20' rx='4' ry='6' fill='%23ffd700' opacity='0.9'/%3E%3C/svg%3E"/>
+
+  <style>
+    :root {
+      --cream:    #fdf8f2;
+      --blush:    #f2e0d8;
+      --rose:     #e8c4b8;
+      --dusty:    #d4a89a;
+      --terra:    #b07060;
+      --fog:      #e9eef6;
+      --mist:     #d2dded;
+      --pewter:   #8fa8c4;
+      --denim:    #3d6fa0;
+      --navy:     #1b3f6a;
+      --ink:      #2a1a14;
+      --serif:    'EB Garamond', Georgia, serif;
+      --sans:     'Tenor Sans', sans-serif;
+      --script:   'Marck Script', cursive;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--cream);
+      color: var(--ink);
+      overflow-x: hidden;
+    }
+
+    /* ─── ANNOUNCEMENT BAR ─── */
+    .announce {
+      background: var(--rose);
+      color: var(--ink);
+      text-align: center;
+      padding: 10px 16px;
+      font-size: .62rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: sticky; top: 0; z-index: 200;
+      background: rgba(253,248,242,0.97);
+      border-bottom: 1px solid var(--blush);
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: 0 48px;
+      height: 60px;
+      backdrop-filter: blur(6px);
+    }
+    .nav-left {
+      display: flex; gap: 28px;
+    }
+    .nav-left a, .nav-right a {
+      font-size: .58rem;
+      letter-spacing: .24em;
+      text-transform: uppercase;
+      color: var(--terra);
+      text-decoration: none;
+      transition: color .2s;
+    }
+    .nav-left a:hover, .nav-right a:hover { color: var(--ink); }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .logo-cat {
+      width: 38px; height: 38px;
+    }
+    .logo-text {
+      font-family: var(--script);
+      font-size: 1.45rem;
+      color: var(--ink);
+      letter-spacing: .04em;
+      line-height: 1;
+    }
+    .nav-right {
+      display: flex; gap: 28px; justify-content: flex-end;
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      display: grid;
+      grid-template-columns: 55% 45%;
+      height: 86vh;
+      background: var(--cream);
+      border-bottom: 1px solid var(--blush);
+      overflow: hidden;
+    }
+    .hero-img {
+      position: relative;
+      background: var(--blush);
+      overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .hero-img img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 9s ease;
+    }
+    .hero:hover .hero-img img { transform: scale(1.035); }
+    /* Decorative watercolor circle */
+    .hero-img::before {
+      content: '';
+      position: absolute;
+      top: 8%; left: -8%;
+      width: 55%; height: 55%;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(232,196,184,0.45) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-img::after {
+      content: '';
+      position: absolute;
+      bottom: 5%; right: -5%;
+      width: 38%; height: 38%;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(176,112,96,0.2) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-candle-display {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      animation: floatUp 1s ease both;
+    }
+    @keyframes floatUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    /* SVG candle illustration */
+    .hero-candle-svg {
+      filter: drop-shadow(0 18px 32px rgba(176,112,96,0.18));
+    }
+
+    .hero-right {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 64px 72px 64px 56px;
+      background: var(--cream);
+      border-left: 1px solid var(--blush);
+    }
+    .hero-label {
+      font-size: .57rem;
+      letter-spacing: .3em;
+      text-transform: uppercase;
+      color: var(--pewter);
+      margin-bottom: 20px;
+    }
+    .hero-h1 {
+      font-family: var(--serif);
+      font-size: clamp(2.6rem, 4.2vw, 4.8rem);
+      font-weight: 400;
+      line-height: 1.05;
+      color: var(--ink);
+      margin-bottom: 28px;
+    }
+    .hero-h1 em {
+      font-style: italic;
+      color: var(--terra);
+      display: block;
+    }
+    .hero-rule {
+      width: 1px; height: 44px;
+      background: var(--rose);
+      margin: 0 0 28px 0;
+    }
+    .hero-caption {
+      font-family: var(--serif);
+      font-size: .95rem;
+      font-style: italic;
+      line-height: 1.8;
+      color: var(--dusty);
+      margin-bottom: 36px;
+      max-width: 320px;
+    }
+    .btn {
+      display: inline-block;
+      padding: 13px 34px;
+      font-size: .6rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: 1px solid var(--terra);
+      color: var(--terra);
+      background: transparent;
+      cursor: pointer;
+      transition: background .25s, color .25s;
+    }
+    .btn:hover {
+      background: var(--terra);
+      color: var(--cream);
+    }
+    .btn-filled {
+      background: var(--terra);
+      color: var(--cream);
+    }
+    .btn-filled:hover {
+      background: var(--ink);
+      border-color: var(--ink);
+    }
+
+    /* ─── BEST SELLERS ─── */
+    .section-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+    .section-label span {
+      font-size: .58rem;
+      letter-spacing: .3em;
+      text-transform: uppercase;
+      color: var(--dusty);
+    }
+    .deco-line {
+      flex: 1; max-width: 80px;
+      height: 1px;
+      background: var(--rose);
+    }
+    .deco-flame {
+      font-size: 1rem;
+      opacity: 0.7;
+    }
+
+    .bestsellers {
+      padding: 80px 60px;
+      background: var(--cream);
+    }
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 28px;
+      margin-bottom: 48px;
+    }
+    .product-card {
+      cursor: pointer;
+    }
+    .product-card:hover .product-img-wrap img {
+      transform: scale(1.04);
+    }
+    .product-img-wrap {
+      position: relative;
+      overflow: hidden;
+      background: var(--blush);
+      aspect-ratio: 1;
+      margin-bottom: 14px;
+    }
+    .product-img-wrap img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform .55s ease;
+      display: block;
+    }
+    /* placeholder illustrated candles — kept for fallback */
+    .product-candle-svg { display: none; }
+    .product-price {
+      font-size: .72rem;
+      letter-spacing: .14em;
+      color: var(--terra);
+      margin-bottom: 5px;
+    }
+    .product-name {
+      font-family: var(--serif);
+      font-size: 1rem;
+      font-style: italic;
+      color: var(--ink);
+    }
+    .product-badge {
+      position: absolute;
+      top: 12px; left: 12px;
+      background: var(--terra);
+      color: var(--cream);
+      font-size: .52rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      padding: 5px 10px;
+      z-index: 2;
+    }
+    .text-center { text-align: center; }
+
+    /* ─── BRAND STORY ─── */
+    .brand-story {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 480px;
+      background: var(--blush);
+    }
+    .brand-img {
+      position: relative;
+      overflow: hidden;
+      background: var(--rose);
+      display: flex; align-items: center; justify-content: center;
+    }
+    /* Polaroid-style frame */
+    .polaroid {
+      background: white;
+      padding: 18px 18px 44px 18px;
+      box-shadow: 0 8px 40px rgba(42,26,20,0.12);
+      transform: rotate(-1.5deg);
+      max-width: 260px;
+      position: relative;
+      z-index: 2;
+    }
+    .polaroid-inner {
+      width: 100%;
+      aspect-ratio: 1;
+      overflow: hidden;
+      display: block;
+    }
+    .polaroid-caption {
+      position: absolute;
+      bottom: 12px; left: 0; right: 0;
+      text-align: center;
+      font-family: var(--script);
+      font-size: .85rem;
+      color: var(--dusty);
+    }
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 72px 80px;
+    }
+    .brand-welcome {
+      font-size: .57rem;
+      letter-spacing: .3em;
+      text-transform: uppercase;
+      color: var(--pewter);
+      margin-bottom: 12px;
+    }
+    .brand-welcome-rule {
+      width: 32px; height: 1px;
+      background: var(--dusty);
+      margin: 0 0 20px 0;
+    }
+    .brand-h {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 3vw, 3.2rem);
+      font-weight: 400;
+      line-height: 1.15;
+      color: var(--ink);
+      margin-bottom: 28px;
+    }
+    .brand-p {
+      font-family: var(--serif);
+      font-size: .98rem;
+      font-style: italic;
+      line-height: 1.85;
+      color: #7a5a50;
+      max-width: 400px;
+    }
+    /* deco chevrons */
+    .deco-chevrons {
+      position: absolute;
+      top: 28px; right: 28px;
+      opacity: 0.35;
+    }
+
+    /* ─── SINCE ─── */
+    .since-section {
+      padding: 80px 60px;
+      background: var(--cream);
+    }
+    .since-label {
+      text-align: center;
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: .9rem;
+      color: var(--pewter);
+      margin-bottom: 48px;
+    }
+    .since-label strong {
+      font-family: var(--script);
+      font-size: 1.4rem;
+      color: var(--terra);
+      font-style: normal;
+    }
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+    .cat-card {
+      background: var(--blush);
+      text-align: center;
+      overflow: hidden;
+    }
+    .cat-img {
+      width: 100%;
+      aspect-ratio: 4/3;
+      overflow: hidden;
+      position: relative;
+    }
+    .cat-img.cat-a { background: linear-gradient(145deg, #f2e0d8, #e8c4b8); }
+    .cat-img.cat-b { background: linear-gradient(145deg, #e9eef6, #d2dded); }
+    .cat-img.cat-c { background: linear-gradient(145deg, #fdf8f2, #f2e0d8); }
+    .cat-body {
+      padding: 28px 24px;
+    }
+    .cat-title {
+      font-family: var(--sans);
+      font-size: .62rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--ink);
+      margin-bottom: 16px;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: var(--ink);
+      color: rgba(253,248,242,0.65);
+      padding: 56px 60px 32px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 40px;
+    }
+    .footer-brand .logo-text { color: var(--cream); }
+    .footer-brand p {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: .9rem;
+      line-height: 1.8;
+      margin-top: 16px;
+      color: rgba(253,248,242,0.55);
+      max-width: 240px;
+    }
+    .footer-col h4 {
+      font-size: .57rem;
+      letter-spacing: .26em;
+      text-transform: uppercase;
+      color: rgba(253,248,242,0.4);
+      margin-bottom: 20px;
+    }
+    .footer-col a {
+      display: block;
+      font-family: var(--serif);
+      font-size: .92rem;
+      color: rgba(253,248,242,0.6);
+      text-decoration: none;
+      margin-bottom: 10px;
+      transition: color .2s;
+    }
+    .footer-col a:hover { color: var(--cream); }
+    .footer-bottom {
+      grid-column: 1/-1;
+      border-top: 1px solid rgba(253,248,242,0.1);
+      padding-top: 24px;
+      font-size: .58rem;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      text-align: center;
+      color: rgba(253,248,242,0.25);
+    }
+
+    /* ─── MARQUEE ─── */
+    .marquee-wrap {
+      overflow: hidden;
+      border-top: 1px solid var(--blush);
+      border-bottom: 1px solid var(--blush);
+      padding: 12px 0;
+      background: var(--cream);
+    }
+    .marquee-track {
+      display: flex;
+      gap: 0;
+      animation: marquee 22s linear infinite;
+      white-space: nowrap;
+    }
+    @keyframes marquee {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .marquee-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 16px;
+      padding: 0 36px;
+      font-size: .58rem;
+      letter-spacing: .24em;
+      text-transform: uppercase;
+      color: var(--dusty);
+    }
+    .marquee-dot { color: var(--rose); font-size: .8rem; }
+  </style>
+</head>
+<body>
+
+  <!-- ANNOUNCE -->
+  <div class="announce">Free shipping on orders ₩50,000 or more &nbsp;·&nbsp; Handpoured with love in Seoul</div>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-left">
+      <a href="#">About</a>
+      <a href="#">Shop</a>
+      <a href="#">Scent Notes</a>
+    </div>
+    <a href="#" class="nav-logo">
+      <!-- Cat SVG logo -->
+      <svg class="logo-cat" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <!-- pink bg circle -->
+        <circle cx="50" cy="50" r="48" fill="#f2e0d8"/>
+        <!-- cat body (rounded) -->
+        <ellipse cx="50" cy="65" rx="26" ry="22" fill="#fff0ee"/>
+        <!-- head -->
+        <circle cx="50" cy="40" r="20" fill="#fff0ee"/>
+        <!-- left ear -->
+        <polygon points="32,26 27,10 42,22" fill="#fff0ee"/>
+        <polygon points="34,24 30,14 40,22" fill="#f2b8b8"/>
+        <!-- right ear -->
+        <polygon points="68,26 73,10 58,22" fill="#fff0ee"/>
+        <polygon points="66,24 70,14 60,22" fill="#f2b8b8"/>
+        <!-- eyes closed happy -->
+        <path d="M41,39 Q44,36 47,39" stroke="#c97c7c" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M53,39 Q56,36 59,39" stroke="#c97c7c" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <!-- nose -->
+        <path d="M48,44 L50,46 L52,44 Q50,42 48,44Z" fill="#e89090"/>
+        <!-- mouth -->
+        <path d="M47,46.5 Q50,49 53,46.5" stroke="#c97c7c" stroke-width="1" fill="none" stroke-linecap="round"/>
+        <!-- whiskers left -->
+        <line x1="30" y1="44" x2="45" y2="45" stroke="#c97c7c" stroke-width="0.8" opacity="0.6"/>
+        <line x1="30" y1="47" x2="45" y2="47" stroke="#c97c7c" stroke-width="0.8" opacity="0.6"/>
+        <!-- whiskers right -->
+        <line x1="70" y1="44" x2="55" y2="45" stroke="#c97c7c" stroke-width="0.8" opacity="0.6"/>
+        <line x1="70" y1="47" x2="55" y2="47" stroke="#c97c7c" stroke-width="0.8" opacity="0.6"/>
+        <!-- tail -->
+        <path d="M24,70 Q10,58 18,45 Q22,38 28,42" stroke="#e8c4b8" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <!-- paw -->
+        <ellipse cx="25" cy="72" rx="7" ry="5" fill="#fff0ee"/>
+        <circle cx="23" cy="70" r="2" fill="#f2b8b8"/>
+        <circle cx="27" cy="70" r="2" fill="#f2b8b8"/>
+        <circle cx="25" cy="74" r="2" fill="#f2b8b8"/>
+        <!-- candle on head -->
+        <rect x="46" y="14" width="8" height="12" rx="1" fill="#fdf8f2" stroke="#e8c4b8" stroke-width="0.8"/>
+        <!-- flame -->
+        <ellipse cx="50" cy="11" rx="3.5" ry="5" fill="#ffd56b"/>
+        <ellipse cx="50" cy="12" rx="2" ry="3" fill="#ffaa44" opacity="0.7"/>
+        <!-- flame glow -->
+        <circle cx="50" cy="11" r="6" fill="#ffd56b" opacity="0.18"/>
+      </svg>
+      <span class="logo-text">light it up</span>
+    </a>
+    <div class="nav-right">
+      <a href="#">Search</a>
+      <a href="#">Account</a>
+      <a href="#">Cart (0)</a>
+      <a href="add-product.html" class="btn btn-filled" style="font-size:.52rem;padding:8px 18px;letter-spacing:.18em;border:1px solid var(--terra);text-decoration:none;">Enter Product</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-img">
+      <img src="https://i.pinimg.com/1200x/8c/0e/77/8c0e77e332fe97d73d9c3f6e85e65d5b.jpg" alt="Light It Up hero candle"/>
+    </div>
+    <div class="hero-right">
+      <p class="hero-label">Hand-poured &nbsp;·&nbsp; Small batch</p>
+      <h1 class="hero-h1">
+        Candles made<br>
+        <em>with love.</em>
+      </h1>
+      <div class="hero-rule"></div>
+      <p class="hero-caption">
+        Every flame tells a story. Our small-batch soy candles are crafted to fill your space with warmth, scent, and a little magic.
+      </p>
+      <a href="#" class="btn">Shop Now</a>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee-wrap">
+    <div class="marquee-track">
+      <span class="marquee-item">🕯️ Hand-poured <span class="marquee-dot">✦</span></span>
+      <span class="marquee-item">100% Soy Wax <span class="marquee-dot">✦</span></span>
+      <span class="marquee-item">Phthalate-free Fragrance <span class="marquee-dot">✦</span></span>
+      <span class="marquee-item">Made in Seoul <span class="marquee-dot">✦</span></span>
+      <span class="marquee-item">Cotton Wicks <span class="marquee-dot">✦</span></span>
+      <span class="marquee-item">Slow Burn <span class="marquee-dot">✦</span></span>
+      <span class="marquee-item">🕯️ Hand-poured <span class="marquee-dot">✦</span></span>
+      <span class="marquee-item">100% Soy Wax <span class="marquee-dot">✦</span></span>
+      <span class="marquee-item">Phthalate-free Fragrance <span class="marquee-dot">✦</span></span>
+      <span class="marquee-item">Made in Seoul <span class="marquee-dot">✦</span></span>
+      <span class="marquee-item">Cotton Wicks <span class="marquee-dot">✦</span></span>
+      <span class="marquee-item">Slow Burn <span class="marquee-dot">✦</span></span>
+    </div>
+  </div>
+
+  <!-- BEST SELLERS -->
+  <section class="bestsellers">
+    <div class="section-label">
+      <div class="deco-line"></div>
+      <span class="deco-flame">🕯</span>
+      <span>Best Sellers</span>
+      <span class="deco-flame">🕯</span>
+      <div class="deco-line"></div>
+    </div>
+
+    <div class="products-grid" id="products-grid">
+      <!-- Products load here from Google Sheet -->
+      <div style="grid-column:1/-1;text-align:center;padding:40px;font-family:var(--serif);font-style:italic;color:var(--dusty);">
+        Loading candles…
+      </div>
+    </div>
+
+    <div class="text-center">
+      <a href="#" class="btn">View All Candles</a>
+    </div>
+  </section>
+
+  <!-- BRAND STORY -->
+  <section class="brand-story">
+    <div class="brand-img">
+      <!-- deco chevrons -->
+      <svg class="deco-chevrons" width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10,10 L30,30 L50,10" stroke="#b07060" stroke-width="2" fill="none" opacity="0.4"/>
+        <path d="M10,22 L30,42 L50,22" stroke="#b07060" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M10,34 L30,54 L50,34" stroke="#b07060" stroke-width="2" fill="none" opacity="0.2"/>
+      </svg>
+      <div class="polaroid">
+        <div class="polaroid-inner">
+          <img src="https://i.pinimg.com/1200x/cc/e5/82/cce582dfe45449e4258654f7b3e98329.jpg" alt="Our candles" style="width:100%;height:100%;object-fit:cover;display:block;"/>
+        </div>
+        <span class="polaroid-caption">light it up co.</span>
+      </div>
+    </div>
+    <div class="brand-text">
+      <p class="brand-welcome">Welcome</p>
+      <div class="brand-welcome-rule"></div>
+      <h2 class="brand-h">We're so glad<br>you're here!</h2>
+      <p class="brand-p">
+        Light It Up is a small-batch candle studio born in Seoul. We believe every room deserves a little warmth — a flickering flame, a soft scent, a moment of calm. Our candles are hand-poured with 100% soy wax and fragrance blends that feel like a hug.
+      </p>
+    </div>
+  </section>
+
+  <!-- SINCE / CATEGORIES -->
+  <section class="since-section">
+    <p class="since-label">since: <strong>2024</strong></p>
+    <div class="categories-grid">
+      <div class="cat-card">
+        <div class="cat-img">
+          <img src="https://i.pinimg.com/736x/59/85/18/59851812292ca25622b68e3522df042c.jpg" alt="Soy Candles" style="width:100%;height:100%;object-fit:cover;display:block;"/>
+        </div>
+        <div class="cat-body">
+          <p class="cat-title">Soy Candles</p>
+          <a href="#" class="btn btn-filled" style="font-size:.55rem;padding:10px 24px;">Shop Now</a>
+        </div>
+      </div>
+      <div class="cat-card">
+        <div class="cat-img">
+          <img src="https://i.pinimg.com/736x/30/4e/14/304e14e5b573a3517c79d921e2964ae4.jpg" alt="Travel Tins" style="width:100%;height:100%;object-fit:cover;display:block;"/>
+        </div>
+        <div class="cat-body">
+          <p class="cat-title">Travel Tins</p>
+          <a href="#" class="btn btn-filled" style="font-size:.55rem;padding:10px 24px;">Shop Now</a>
+        </div>
+      </div>
+      <div class="cat-card">
+        <div class="cat-img">
+          <img src="https://i.pinimg.com/1200x/0e/39/ec/0e39ec12bff3c5c5088289a69d1e6d3f.jpg" alt="Room Mist" style="width:100%;height:100%;object-fit:cover;display:block;"/>
+        </div>
+        <div class="cat-body">
+          <p class="cat-title">Room Mist</p>
+          <a href="#" class="btn btn-filled" style="font-size:.55rem;padding:10px 24px;">Shop Now</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-brand">
+      <div class="nav-logo" style="display:flex;align-items:center;gap:10px;">
+        <svg width="32" height="32" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="48" fill="#3a2520"/>
+          <ellipse cx="50" cy="65" rx="26" ry="22" fill="#5a3530"/>
+          <circle cx="50" cy="40" r="20" fill="#5a3530"/>
+          <polygon points="32,26 27,10 42,22" fill="#5a3530"/>
+          <polygon points="68,26 73,10 58,22" fill="#5a3530"/>
+          <path d="M41,39 Q44,36 47,39" stroke="#c97c7c" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <path d="M53,39 Q56,36 59,39" stroke="#c97c7c" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <rect x="46" y="14" width="8" height="12" rx="1" fill="#fdf8f2" stroke="#c4907c" stroke-width="0.8"/>
+          <ellipse cx="50" cy="11" rx="3.5" ry="5" fill="#ffd56b"/>
+        </svg>
+        <span class="logo-text" style="color:#fdf8f2;">light it up</span>
+      </div>
+      <p>Small-batch soy candles, hand-poured with care somewhere in Seoul.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Shop</h4>
+      <a href="#">Soy Candles</a>
+      <a href="#">Travel Tins</a>
+      <a href="#">Room Mist</a>
+      <a href="#">Gift Sets</a>
+    </div>
+    <div class="footer-col">
+      <h4>Info</h4>
+      <a href="#">About Us</a>
+      <a href="#">Candle Care</a>
+      <a href="#">Shipping</a>
+      <a href="#">Contact</a>
+    </div>
+    <div class="footer-bottom">
+      © 2024 Light It Up &nbsp;·&nbsp; Made with 🕯️ in Seoul
+    </div>
+  </footer>
+
+
+  <script>
+    // ── CSV SOURCE ──────────────────────────────────────────────────────────
+    const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQGX7fH_3EElyqBsvNxjUNs0BVTe1ncjm3ZfEJliTXxkwcZpwO7zBcldOK2nAJ4AbCTHDs39_hFOI6A/pub?output=csv';
+
+    // ── FALLBACK PRODUCTS (shown if no Google Sheet is connected yet) ────────
+    const FALLBACK_PRODUCTS = [
+      {
+        name: 'Seoul Dusk',
+        category: 'Soy Candle',
+        desc: 'A warm amber and sandalwood blend that captures the golden hour glow of Seoul at sunset.',
+        price: '28000',
+        badge: 'Best Seller',
+        img: 'https://i.pinimg.com/736x/bd/ec/58/bdec58445d38e1ff1534a5b0d906cb84.jpg'
+      },
+      {
+        name: 'Misty Rain',
+        category: 'Soy Candle',
+        desc: 'Fresh green tea and rain-soaked earth — like a quiet walk through Bukhansan on a cloudy morning.',
+        price: '28000',
+        badge: null,
+        img: 'https://i.pinimg.com/736x/70/b2/97/70b2976937cf79917221e52f9049497c.jpg'
+      },
+      {
+        name: 'Cherry Blossom Tin',
+        category: 'Travel Tin',
+        desc: 'Delicate floral notes of cherry blossom and white musk, perfect for travel.',
+        price: '24000',
+        badge: 'New',
+        img: 'https://i.pinimg.com/1200x/22/50/70/2250708fd78b5daedc68730cc6feca09.jpg'
+      },
+      {
+        name: 'Midnight Tea',
+        category: 'Soy Candle',
+        desc: 'Black tea, bergamot, and a hint of smoke — a cozy ritual for late-night moments.',
+        price: '32000',
+        badge: null,
+        img: 'https://i.pinimg.com/1200x/70/1c/33/701c331b1fc214f90921c5fad350292d.jpg'
+      }
+    ];
+
+    // ── CSV PARSER ───────────────────────────────────────────────────────────
+    function parseCSV(text) {
+      const rows = [];
+      let row = [], field = '', inQuotes = false;
+      for (let i = 0; i < text.length; i++) {
+        const ch = text[i], next = text[i + 1];
+        if (inQuotes) {
+          if (ch === '"' && next === '"') { field += '"'; i++; }
+          else if (ch === '"') { inQuotes = false; }
+          else { field += ch; }
+        } else {
+          if (ch === '"') { inQuotes = true; }
+          else if (ch === ',') { row.push(field.trim()); field = ''; }
+          else if (ch === '\r' && next === '\n') { row.push(field.trim()); rows.push(row); row = []; field = ''; i++; }
+          else if (ch === '\n' || ch === '\r') { row.push(field.trim()); rows.push(row); row = []; field = ''; }
+          else { field += ch; }
+        }
+      }
+      if (field || row.length) { row.push(field.trim()); rows.push(row); }
+      return rows;
+    }
+
+    // ── RENDER ONE CARD ──────────────────────────────────────────────────────
+    function renderCard(p) {
+      const card = document.createElement('div');
+      card.className = 'product-card';
+
+      // Format price: if it's a plain number add ₩ and comma formatting
+      let displayPrice = p.price;
+      const num = parseFloat(String(p.price).replace(/[^0-9.]/g, ''));
+      if (!isNaN(num)) {
+        displayPrice = '₩' + num.toLocaleString('ko-KR');
+      }
+
+      // Badge (null / empty = hidden)
+      const badgeHTML = (p.badge && p.badge.toLowerCase() !== 'null' && p.badge !== '')
+        ? `<span class="product-badge">${p.badge}</span>` : '';
+
+      card.innerHTML = `
+        <div class="product-img-wrap">
+          ${badgeHTML}
+          <img src="${p.img}" alt="${p.name}" loading="lazy"
+               onerror="this.src='https://images.unsplash.com/photo-1603905856145-b2df23cc6195?w=600&auto=format&fit=crop&q=80'"/>
+        </div>
+        <p class="product-price">${displayPrice}</p>
+        <p class="product-name">${String(p.name).toLowerCase()}</p>
+      `;
+      return card;
+    }
+
+    // ── RENDER GRID ──────────────────────────────────────────────────────────
+    function renderGrid(products) {
+      const grid = document.getElementById('products-grid');
+      grid.innerHTML = '';
+      // Adjust grid columns to match product count (max 4)
+      const cols = Math.min(products.length, 4);
+      grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+      products.forEach(p => grid.appendChild(renderCard(p)));
+    }
+
+    // ── LOAD FROM GOOGLE SHEET CSV ───────────────────────────────────────────
+    async function loadProducts() {
+      if (!CSV_URL || CSV_URL === 'YOUR_GOOGLE_SHEET_CSV_URL_HERE') {
+        // No sheet connected yet — use fallback data
+        renderGrid(FALLBACK_PRODUCTS);
+        return;
+      }
+
+      try {
+        const res = await fetch(CSV_URL);
+        if (!res.ok) throw new Error('Fetch failed');
+        const text = await res.text();
+        const rows = parseCSV(text);
+
+        // First row = headers: name, category, desc, price, badge, img
+        const headers = rows[0].map(h => h.toLowerCase().trim());
+        const products = rows.slice(1)
+          .filter(r => r.length >= 2 && r[0]) // skip empty rows
+          .map(r => {
+            const obj = {};
+            headers.forEach((h, i) => { obj[h] = r[i] || ''; });
+            return obj;
+          });
+
+        if (products.length === 0) throw new Error('No products found in sheet');
+        renderGrid(products);
+      } catch (err) {
+        console.warn('Could not load Google Sheet, using fallback data.', err);
+        renderGrid(FALLBACK_PRODUCTS);
+      }
+    }
+
+    // Run on page load
+    loadProducts();
+  </script>
+
+</body>
+</html>
